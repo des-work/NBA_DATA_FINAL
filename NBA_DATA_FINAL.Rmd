@@ -1,0 +1,136 @@
+---
+title: "NBA Data Visualization Final"
+author: "Desmond Workman"
+date: "5/5/2021"
+output: 
+  html_document:
+      toc: TRUE
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(RColorBrewer)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(janitor)
+library(effects)
+
+```
+ **NBA Player and Scoring Analytics**
+
+The data was found here:[NBA Shooter Data](https://www.kaggle.com/drgilermo/nba-players-stats)
+
+  In this analysis I am looking at historical data from the National Basketball Association. In this study I will analyzing (1)  How did the 2point shot effect the True Shot percentage or (TS%) of some of the best scorers/shooters off all time. (2) I will additionallly be looking at how important the 2 point shot  was to their individual their TS%.The finding will show which players relied more on shots under the 22 foot range.(NBA 3-point line Finally I will be looking at the age distribution of the players in the league.
+  
+  The players used for the NBA Shooter data
+
+--**Lebron James**--
+
+--**Stephen Curry**--
+
+--**Kareem Abdul Jabbar**--
+
+--**Larry Bird**--
+
+--**Michael Jordan**--
+
+--**Shaquille O'Neal**--
+
+--**Ray Allen**--
+
+--**Carmelo Anthony**--
+
+--**Klay Thompson**--
+
+--**Devin Booker**--
+
+
+```{r, message=FALSE, echo=FALSE}
+
+nba_player_data <- read_csv("player_data.csv")
+
+nba_season_stats <- read_csv("Seasons_Stats.csv")
+
+
+
+nba_season_stats_tidy <-nba_season_stats %>% 
+  select(`Player`,Year,`TS%`,`FG%`,`2P%`,`eFG%`,`3P%`,`FGA`,`3PA`, `FGA`, `2PA`, `Pos`)
+
+  nba_best_shooters <- nba_season_stats_tidy %>% 
+  filter(Player == "LeBron James" |
+           Player == "Stephen Curry" |
+           Player == "Michael Jordan*" |
+           Player == "Klay Thompson" |
+           Player == "Ray Allen" |
+           Player == "Carmelo Anthony" |
+           Player == "Larry Bird*" |
+           Player == "Devin Booker" |
+           Player == "Kareem Abdul-Jabbar*" |
+           Player == "Shaquille O'Neal*")
+  
+  
+  
+
+```
+```{r}
+```
+## What effects TS% the most?
+The accuracy model shows how much the TS% wase affected by theses variables; FG% 2PA% 2P%, eFG%, FGA and 2PA
+
+
+```{r, message=FALSE, echo=FALSE}
+
+accuracy_model <- nba_best_shooters %>% 
+    lm(formula = `TS%` ~`FG%` + `2P%` + `FGA` + `2PA` )
+summary(accuracy_model)
+  
+  
+  
+    nba_best_shooters %>% 
+    ggplot(aes(x = `2P%`,
+               y = `TS%`)) +
+    geom_point() +
+    geom_smooth(method = "lm")+
+      ggtitle("Two Point Shot \n Affecting the True Shot Percentage of the Best Shooters \n in the Nba") +
+      ylab("True Shot Percentage of Best Shooters")+
+      xlab("Two Point Percentage of the Best Shooters")
+  
+```{r, message=FALSE, echo= True}
+```
+## Age Distribution of NBA Players
+
+The following graph displays the distribution of ages for players in the NBA.
+```{r,message=FALSE, echo=FALSE}
+
+nba_season_stats %>% 
+  ggplot(aes(y = `Age`)) +
+  geom_bar(col = "black", fill = "grey") +
+  ylab("Age of Players in the NBA") +
+  xlab("Distribution Count") +
+  ggtitle("Distribution of Players Ages in the NBA")
+  
+```
+```{r,}
+```
+## Best 2 Point Scoring Position
+ This graph shows the best 2 point scoring positions in the NBA since 2000. The graph chart compares the 2 point attempts  with 2 point percentages.
+ 
+```{r,message=FALSE,echo=FALSE}
+
+nba_best_shooters %>% 
+  ggplot(aes(x = `2PA`,
+             y = `2P%`,
+              color = `Pos`,
+             shape = `Pos`)) +
+   geom_jitter( alpha = .55, size = 2.5) +
+  ggtitle("Field Goal Attempts Compared to True Shot Percentage rates") +
+   ylab("Two Point Completion Percent") +
+   xlab("Two Pointers  Attempted")
+   
+```
+
+
